@@ -9,8 +9,8 @@
 
 namespace __nameof_utils {
 
-// Only supported compilers are GNU C++, Clang, and MSVC.
 #if defined __GNUG__ || defined _MSC_VER
+// Only supported compilers are GCC, Clang, and MSVC.
 
     template<typename T>
     consteval std::string_view get_typename_raw() {
@@ -41,13 +41,11 @@ namespace __nameof_utils {
 
 #endif
 
-#ifdef __GNUG__
-
-  #ifndef __clang__
-  // compiler is GNU C++ -> full implementation
+#if (defined __GNUG__ && !defined __clang__) || defined _MSC_VER
+// compiler is GCC or MSVC
 
     struct oversized_array {
-        static constexpr size_t max_size = 10 * 1024 * 1024;
+        static constexpr size_t max_size = 1024;
         std::array<char, max_size> data{};
         size_t size;
     };
@@ -73,7 +71,7 @@ namespace __nameof_utils {
 
     consteval std::string_view to_string_view(auto callable) {
         constexpr auto &static_data = make_static<to_right_sized_array(callable)>();
-        return std::string_view{static_data.begin(), static_data.size()};
+        return std::string_view(&*static_data.begin(), static_data.size()); // the &* is to convert an unspecified array iterator type to const char *
     }
 
     template<typename T>
@@ -83,19 +81,13 @@ namespace __nameof_utils {
 
     #define nameof(T, ...) __nameof_utils::get_typename<T,##__VA_ARGS__>()
 
-  #else // __clang__ defined
-  // compiler is Clang -> partial implementation
+#elif defined __clang__
+// compiler is Clang
 
     #define nameof(T, ...) __nameof_utils::get_typename_raw<T __VA_OPT__(,) __VA_ARGS__>()
 
-  #endif
-#elif defined _MSC_VER
-// compiler is MSVC -> partial implementation
-
-    #define nameof(T, ...) __nameof_utils::get_typename_raw<T,##__VA_ARGS__>()
-
 #else
-// unsupported compiler -> unhelpful implementation
+// unsupported compiler
 
     #define nameof(...) std::string_view("nameof(" #__VA_ARGS__ ")")
 
