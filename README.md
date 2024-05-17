@@ -1,6 +1,8 @@
 # cpp-nameof
 A small C++ header file which provides the nameof(T) macro.
 
+Tested with `x86-64 gcc 14.1 -std=c++23`, `x86-64 clang 18.1.0 -std=c++23`, and `x64 MSVC.latest /std:c++latest` as of May 5, 2024.
+
 ## Usage
 To use this header file, simply `#include` it at the top of any of your C++ source files and the `nameof` macro will be defined.
 
