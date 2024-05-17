@@ -33,10 +33,9 @@ namespace __nameof_utils {
         # error Unsupported compiler!
         #endif
         ;
-        // constexpr size_t start_offset = str.find(prefix) + prefix.length();
-        // constexpr size_t end_offset = suffix.length();
-        return str;
-        // return std::string_view(str.begin() + start_offset, str.length() - start_offset - end_offset);
+        constexpr size_t start_offset = str.find(prefix) + prefix.length();
+        constexpr size_t end_offset = suffix.length();
+        return std::string_view(str.begin() + start_offset, str.length() - start_offset - end_offset);
     }
 
 #endif
